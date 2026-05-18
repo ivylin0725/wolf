@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>狼狼打帖必勝計算機</title>
+    <title>狼狼打帖計算機</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -30,13 +30,14 @@
         h1 {
             color: var(--accent-highlight);
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
+            margin-bottom: 24px;
+            font-size: 1.6rem; /* 縮小了主標題 */
         }
 
         .container {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
             width: 100%;
             max-width: 600px;
         }
@@ -45,7 +46,7 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 24px;
+            padding: 20px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
@@ -53,8 +54,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            padding: 24px;
+            gap: 16px;
+            padding: 20px;
         }
 
         .input-group {
@@ -65,8 +66,8 @@
         }
 
         .input-group label {
-            font-size: 1.2rem;
-            margin-right: 16px;
+            font-size: 1rem; /* 縮小了標籤文字 */
+            margin-right: 12px;
             font-weight: bold;
         }
 
@@ -74,10 +75,10 @@
             background-color: #2c2c2c;
             border: 1px solid #555;
             color: #fff;
-            font-size: 1.3rem;
-            padding: 8px 12px;
+            font-size: 1.1rem; /* 縮小了輸入框數字 */
+            padding: 6px 10px;
             border-radius: 6px;
-            width: 180px;
+            width: 160px;
             outline: none;
             transition: border-color 0.3s;
             text-align: center;
@@ -89,19 +90,19 @@
 
         /* 勾選框樣式 */
         .checkbox-label {
-            font-size: 1.1rem;
+            font-size: 1rem; /* 縮小了勾選文字 */
             font-weight: bold;
             color: var(--accent-water);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             user-select: none;
         }
 
         .checkbox-label input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
             accent-color: var(--accent-water);
         }
@@ -109,12 +110,12 @@
         .results-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .result-box {
             border-radius: 12px;
-            padding: 28px 24px;
+            padding: 20px;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
@@ -139,9 +140,9 @@
         }
 
         .result-title {
-            font-size: 1.3rem;
+            font-size: 1.1rem; /* 縮小了面板標題 */
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .title-normal { color: var(--accent-highlight); }
@@ -149,15 +150,15 @@
         .title-fire { color: var(--accent-fire); }
 
         .result-value {
-            font-size: 3.5rem;
+            font-size: 2.5rem; /* 縮小了最終結果的大數字 (原本是 3.5rem) */
             font-weight: bold;
             color: #fff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            margin: 10px 0;
+            margin: 8px 0;
         }
         
         .result-desc {
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* 縮小了底部說明文字 */
             color: var(--text-muted);
         }
     </style>
@@ -167,14 +168,14 @@
     <div class="container">
         <div class="card input-card">
             <div class="input-group">
-                <label for="global-base">基礎戰力：</label>
+                <label for="global-base">我的基礎戰力：</label>
                 <input type="number" id="global-base" class="input-control" value="462174" min="0">
             </div>
             
             <div class="input-group">
                 <label class="checkbox-label">
                     <input type="checkbox" id="wanshi-book">
-                    📖 啟用《萬世橫江典》(出水時額外 +5%)
+                    《萬世橫江典》(水屬+5%)
                 </label>
             </div>
         </div>
@@ -182,13 +183,13 @@
         <div class="results-container">
             
             <div class="result-box box-normal" id="panel-1">
-                <div class="result-title title-normal" id="p1-title">⚔️ 一般克制局 </div>
+                <div class="result-title title-normal" id="p1-title">⚔️ 一般克制局</div>
                 <div class="result-desc">可擊敗的最高戰力</div>
                 <div class="result-value" id="res-1">0</div>
             </div>
 
             <div class="result-box box-fire" id="panel-2" style="display: none;">
-                <div class="result-title title-fire">🔥🪵 火/木克制對方</div>
+                <div class="result-title title-fire">🔥🪵 我方出火/木 (克制對方)</div>
                 <div class="result-desc">可擊敗的最高戰力</div>
                 <div class="result-value" id="res-2">0</div>
             </div>
@@ -235,7 +236,7 @@
 
                 // 面板 1 恢復成一般模式
                 panel1.className = 'result-box box-normal';
-                p1Title.innerHTML = '⚔️ 一般克制局 ';
+                p1Title.innerHTML = '⚔️ 一般克制局';
                 p1Title.className = 'result-title title-normal';
                 
                 // 算入一般倍率
