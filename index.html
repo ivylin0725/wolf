@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狼狼打帖必勝計算機</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --accent-water: #4fc3f7;
+            --accent-fire: #ff8a65;
+            --accent-highlight: #ffca28;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--accent-highlight);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .input-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .input-group label {
+            font-size: 1.2rem;
+            margin-right: 16px;
+            font-weight: bold;
+        }
+
+        .input-control {
+            background-color: #2c2c2c;
+            border: 1px solid #555;
+            color: #fff;
+            font-size: 1.3rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 180px;
+            outline: none;
+            transition: border-color 0.3s;
+            text-align: center;
+        }
+
+        .input-control:focus {
+            border-color: var(--accent-highlight);
+        }
+
+        /* 勾選框樣式 */
+        .checkbox-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-water);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-water);
+        }
+
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .result-box {
+            border-radius: 12px;
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .box-normal {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border: 1px solid #444;
+            border-top: 4px solid var(--accent-highlight);
+        }
+
+        .box-water {
+            background: linear-gradient(145deg, #1a2b3c, #111a24);
+            border: 1px solid #204060;
+            border-top: 4px solid var(--accent-water);
+        }
+
+        .box-fire {
+            background: linear-gradient(145deg, #3c201a, #241411);
+            border: 1px solid #603020;
+            border-top: 4px solid var(--accent-fire);
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .title-normal { color: var(--accent-highlight); }
+        .title-water { color: var(--accent-water); }
+        .title-fire { color: var(--accent-fire); }
+
+        .result-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin: 10px 0;
+        }
+        
+        .result-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card input-card">
+            <div class="input-group">
+                <label for="global-base">基礎戰力：</label>
+                <input type="number" id="global-base" class="input-control" value="462174" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="wanshi-book">
+                    📖 啟用《萬世橫江典》(出水時額外 +5%)
+                </label>
+            </div>
+        </div>
+
+        <div class="results-container">
+            
+            <div class="result-box box-normal" id="panel-1">
+                <div class="result-title title-normal" id="p1-title">⚔️ 一般克制局 </div>
+                <div class="result-desc">可擊敗的最高戰力</div>
+                <div class="result-value" id="res-1">0</div>
+            </div>
+
+            <div class="result-box box-fire" id="panel-2" style="display: none;">
+                <div class="result-title title-fire">🔥🪵 火/木克制對方</div>
+                <div class="result-desc">可擊敗的最高戰力</div>
+                <div class="result-value" id="res-2">0</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function calculateAll() {
+            const x = parseFloat(document.getElementById('global-base').value) || 0;
+            const hasWanshi = document.getElementById('wanshi-book').checked;
+            
+            // 儲存數值與勾選狀態
+            localStorage.setItem('savedChallengeBaseCp', x);
+            localStorage.setItem('savedWanshiStatus', hasWanshi);
+
+            // 抓取畫面元素
+            const panel1 = document.getElementById('panel-1');
+            const panel2 = document.getElementById('panel-2');
+            const p1Title = document.getElementById('p1-title');
+            
+            // 一般的克制倍率算式 (1.05 / 0.95)
+            const normalY = x * (1.05 / 0.95);
+            
+            if (hasWanshi) {
+                // --- 狀態：有勾選 ---
+                // 面板 1 變身為水屬性專屬
+                panel1.className = 'result-box box-water';
+                p1Title.innerHTML = '💧 我出水 vs 對方出火 🔥';
+                p1Title.className = 'result-title title-water';
+                
+                // 水屬性加上萬世疊加算法 (1.10 / 0.95)
+                const waterY = x * (1.10 / 0.95);
+                document.getElementById('res-1').innerText = Math.floor(waterY).toLocaleString();
+
+                // 顯示面板 2 (上下排)
+                panel2.style.display = 'block';
+                document.getElementById('res-2').innerText = Math.floor(normalY).toLocaleString();
+
+            } else {
+                // --- 狀態：沒勾選 ---
+                // 隱藏面板 2
+                panel2.style.display = 'none';
+
+                // 面板 1 恢復成一般模式
+                panel1.className = 'result-box box-normal';
+                p1Title.innerHTML = '⚔️ 一般克制局 ';
+                p1Title.className = 'result-title title-normal';
+                
+                // 算入一般倍率
+                document.getElementById('res-1').innerText = Math.floor(normalY).toLocaleString();
+            }
+        }
+
+        // 綁定動態監聽
+        document.getElementById('global-base').addEventListener('input', calculateAll);
+        document.getElementById('wanshi-book').addEventListener('change', calculateAll);
+
+        // 網頁載入時自動讀取記憶
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedBase = localStorage.getItem('savedChallengeBaseCp');
+            const savedWanshi = localStorage.getItem('savedWanshiStatus');
+            
+            if (savedBase) {
+                document.getElementById('global-base').value = savedBase;
+            }
+            if (savedWanshi) {
+                document.getElementById('wanshi-book').checked = (savedWanshi === 'true');
+            }
+            calculateAll();
+        });
+    </script>
+</body>
+</html>
